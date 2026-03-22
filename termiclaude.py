@@ -1247,7 +1247,8 @@ class Supervisor:
         })
 
         # Brief visual indicator (sent to stderr so it doesn't mix with PTY)
-        self._notify(f"[termiclaude] #{self.total_responses} sent {display} ({source})", 'ok')
+        source_info = f"{source}:{self.provider}" if source == 'llm' else source
+        self._notify(f"[termiclaude] #{self.total_responses} sent {display} ({source_info})", 'ok')
 
     def _supervise(self):
         """Periodic health check — ask supervisor LLM if agent is on track."""
