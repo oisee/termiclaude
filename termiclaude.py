@@ -160,6 +160,32 @@ def looks_like_prompt(text: str) -> bool:
 # LLM fallback — only called for ambiguous prompts
 # =============================================================================
 
+def _normalize_llm_response(response: str) -> str:
+    """Normalize LLM response — handle ENTER, SKIP, quotes, escape sequences."""
+    r = response.strip()
+    # Strip wrapping quotes: 'y' → y, "no" → no
+    if len(r) >= 2 and r[0] == r[-1] and r[0] in ('"', "'", '`'):
+        r = r[1:-1]
+    upper = r.upper()
+    # ENTER variants
+    if upper in ('ENTER', '\\N', '\\R', '<ENTER>', '[ENTER]', 'RETURN',
+                 'PRESS ENTER', '(ENTER)', '(PRESS ENTER)', ''):
+        return ''
+    # SKIP variants
+    if upper in ('SKIP', '<SKIP>', '[SKIP]', 'N/A'):
+        return '__SKIP__'
+    # ESC variants
+    if upper in ('ESC', 'ESCAPE', '<ESC>', '[ESC]'):
+        return '\x1b'
+    # TAB
+    if upper in ('TAB', '<TAB>', '[TAB]'):
+        return '\t'
+    # Ctrl+C
+    if upper in ('CTRL+C', 'CTRL-C', '^C'):
+        return '\x03'
+    return r
+
+
 def ask_llm_prompt(context: str, provider: str = 'anthropic',
                    model: str = None, api_key: str = None,
                    system_instructions: str = None) -> Optional[str]:
@@ -1204,12 +1230,12 @@ class Supervisor:
                                    system_instructions=self.system_instructions)
                 source = 'llm'
 
-                if response and response.upper() == 'SKIP':
+                if response is not None:
+                    response = _normalize_llm_response(response)
+
+                if response == '__SKIP__':
                     log_event('llm_skip', {'context': clean_tail_stripped[-200:]})
                     return
-
-                if response and response.upper() == 'ENTER':
-                    response = ''
 
                 if response is None:
                     # LLM failed or returned nothing — default to "y"
