@@ -1211,7 +1211,7 @@ class Supervisor:
                 if response and response.upper() == 'ENTER':
                     response = ''
 
-                if not response:
+                if response is None:
                     # LLM failed or returned nothing — default to "y"
                     response = 'y'
                     source = 'default'
