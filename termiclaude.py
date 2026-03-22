@@ -1008,9 +1008,6 @@ class Supervisor:
         self.child_pid, self.master_fd = pty.fork()
 
         if self.child_pid == 0:
-            # Child: clean env so nested CLI agents (claude, etc.) don't refuse to start
-            for var in ['CLAUDECODE', 'CLAUDE_CODE']:
-                os.environ.pop(var, None)
             # Pass hook env vars
             if self._use_hooks:
                 os.environ.update(self._get_hook_env())
