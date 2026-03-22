@@ -192,7 +192,7 @@ YOUR INPUT:"""
             return _ask_anthropic(prompt, model or 'claude-haiku-4-5-20251001',
                                   api_key or os.getenv('ANTHROPIC_API_KEY'))
         elif provider == 'ollama':
-            return _ask_ollama(prompt, model or 'qwen3:4b')
+            return _ask_ollama(prompt, model or 'ministral-3:8b')
         elif provider == 'openai':
             return _ask_openai(prompt, model or 'gpt-4o-mini',
                                api_key or os.getenv('OPENAI_API_KEY'))
@@ -249,7 +249,7 @@ JSON:"""
             raw = _ask_anthropic(prompt, model or 'claude-haiku-4-5-20251001',
                                  api_key or os.getenv('ANTHROPIC_API_KEY'))
         elif provider == 'ollama':
-            raw = _ask_ollama(prompt, model or 'qwen3:4b')
+            raw = _ask_ollama(prompt, model or 'ministral-3:8b')
         elif provider == 'openai':
             raw = _ask_openai(prompt, model or 'gpt-4o-mini',
                               api_key or os.getenv('OPENAI_API_KEY'))
